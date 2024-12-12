@@ -90,6 +90,8 @@ public class JsonFormatter {
      * @param jsonString 원본 JSON 문자열
      * @return 색상 추가된 JSON 문자열
      */
+    private static JsonColorConfig colorConfig = new JsonColorConfig("yellow", "green", "blue", "red");
+
     public static String syntaxHighlight(String jsonString) {
         String validationMessage = validate(jsonString);
         if (!validationMessage.equals("Valid")) {
@@ -99,6 +101,7 @@ public class JsonFormatter {
         StringBuilder builder = new StringBuilder();
         try {
             JsonNode rootNode = new ObjectMapper().readTree(jsonString);
+
             highlightJsonNode(rootNode, builder, 0);
         } catch (JsonParseException e) {
             return "Invalid JSON format: " + e.getMessage();
@@ -114,7 +117,7 @@ public class JsonFormatter {
             builder.append("{\n");
             node.fields().forEachRemaining(entry -> {
                 builder.append(indent).append("  ")
-                        .append("\u001B[33m\"").append(entry.getKey()).append("\"\u001B[0m") // 키: 노란색
+                        .append(colorConfig.getKeyColor()).append("\"").append(entry.getKey()).append("\"\u001B[0m") // 키 색상
                         .append(" : ");
                 highlightJsonNode(entry.getValue(), builder, indentLevel + 1);
                 builder.append(",\n"); // 키-값 쌍 끝에 쉼표 추가
@@ -134,12 +137,18 @@ public class JsonFormatter {
             }
             builder.append("]");
         } else if (node.isTextual()) {
-            builder.append("\u001B[32m\"").append(node.asText()).append("\"\u001B[0m"); // 값: 초록색
+            builder.append(colorConfig.getStringValueColor()).append("\"").append(node.asText()).append("\"\u001B[0m"); // 값 색상
         } else if (node.isNumber()) {
-            builder.append("\u001B[34m").append(node.asText()).append("\u001B[0m");     // 값: 파란색
+            builder.append(colorConfig.getNumberValueColor()).append(node.asText()).append("\u001B[0m");     // 값 색상
+        } else if (node.isBoolean()) {
+            builder.append(colorConfig.getBooleanValueColor()).append(node.asText()).append("\u001B[0m");    // 값 색상
         } else {
             builder.append(node.asText());
         }
+    }
+
+    public static void setColorConfig(JsonColorConfig config) {
+        colorConfig = config;
     }
 
     public static void main(String[] args) {
@@ -169,7 +178,14 @@ public class JsonFormatter {
         // Syntax Highlighting
         System.out.println("\n=== Syntax Highlighting ===");
         String highlightedJson = JsonFormatter.syntaxHighlight(sampleJson);
+        // 기본 색상 출력
         System.out.println(highlightedJson);
 
+        // 사용자 정의 색상 설정
+        JsonColorConfig customConfig = new JsonColorConfig("cyan", "red", "yellow", "green");
+        JsonFormatter.setColorConfig(customConfig);
+
+        // 사용자 정의 색상 출력
+        System.out.println(JsonFormatter.syntaxHighlight(sampleJson));
     }
 }
