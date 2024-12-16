@@ -29,7 +29,7 @@ test {
 // Maven Publish 설정
 publishing {
     publications {
-        create<MavenPublication>("mavenJava") {
+        mavenJava(MavenPublication) {
             from(components["java"])
             groupId = "com.mimmimji"
             artifactId = 'json-formatter'
