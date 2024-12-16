@@ -27,27 +27,10 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-            
+
     - name: Grant execute permission for Gradle Wrapper
       run: chmod +x ./gradlew
 
     - name: Run Gradle build and tests
       run: ./gradlew clean test
-
-  deploy:
-    if: github.ref == 'refs/heads/main' # main 브랜치로 push된 경우에만 실행
-    needs: build-and-test
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Check out the code
-      uses: actions/checkout@v4
-
-    - name: Set up JDK 11
-      uses: actions/setup-java@v4
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-
-    - name: Build and publish library
-      run: ./gradlew clean build publish # 배포 스크립트 실행
+        
