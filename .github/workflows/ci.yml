@@ -1,0 +1,51 @@
+name: CI & Publish
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  # Job 1: Run tests on pull request
+  test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+
+      - name: Install dependencies
+        run: ./gradlew dependencies
+
+      - name: Run tests
+        run: ./gradlew test
+
+  # Job 2: Publish library on main branch
+  publish:
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'main' && github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+
+      - name: Install dependencies
+        run: ./gradlew dependencies
+
+      - name: Build project
+        run: ./gradlew build
+
+      - name: Publish library
+        run: ./gradlew publish
