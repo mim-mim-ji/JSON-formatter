@@ -1,18 +1,19 @@
 name: CI & Publish
 
 on:
-  pull_request:
+  pull_request:  # PR 발생 시 테스트 실행
     branches:
       - main
-  push:
+  push:  # main 브랜치에 push 시 릴리즈 진행
     branches:
       - main
 
 jobs:
   # Job 1: Run tests on pull request
   test:
+    name: Run Tests
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -21,17 +22,24 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
+          distribution: 'temurin'
 
-      - name: Install dependencies
-        run: ./gradlew dependencies
+      - name: Set Up Gradle
+        uses: gradle/gradle-build-action@v3
 
       - name: Run tests
         run: ./gradlew test
 
   # Job 2: Publish library on main branch
   publish:
+    name: Release and Publish
     runs-on: ubuntu-latest
     if: github.ref_name == 'main' && github.event_name == 'push'
+
+    permissions:
+      contents: write
+      packages: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -40,9 +48,13 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
+          distribution: 'temurin'
 
       - name: Install dependencies
         run: ./gradlew dependencies
+
+      - name: Set Up Gradle
+        uses: gradle/gradle-build-action@v3
 
       - name: Build project
         run: ./gradlew build
