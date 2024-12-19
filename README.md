@@ -26,17 +26,11 @@ JSON 형태의 데이터를 로그에서 포맷팅하는 라이브러리입니�
     <version>1.0.0</version>
 </dependency>
  ```
-```
-mvn clean install
-```
 
 ### 2. Gradle 사용시
 
 ```gradle
 implementation 'com.mimmimji:json-formatter:1.0.0'
-```
-```
-gradle build
 ```
 
 ---
