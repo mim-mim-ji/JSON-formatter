@@ -8,6 +8,10 @@ on:
     branches:
       - main
 
+permissions:
+  checks: write
+  pull-requests: write
+
 jobs:
   # Job 1: Run tests on pull request
   test:
@@ -36,7 +40,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run tests
-        run: ./gradlew test
+        run: ./gradlew --info test
 
       - name: Upload to Codecov
         uses: codecov/codecov-action@v5
