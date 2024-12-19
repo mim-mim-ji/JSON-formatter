@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.TreeMap;
 
 public class JsonFormatter {
@@ -62,9 +62,10 @@ public class JsonFormatter {
         }
 
         try {
-            Object jsonObject = objectMapper.readValue(jsonString, Object.class);
-            TreeMap<String, Object> sortedMap = new TreeMap<>((Map<String, Object>) jsonObject);
-            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(sortedMap);
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(SerializationFeature.INDENT_OUTPUT, true); // Pretty print 설정
+            TreeMap<String, Object> sortedMap = mapper.readValue(jsonString, TreeMap.class);
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(sortedMap);
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid JSON format", e);
         }
