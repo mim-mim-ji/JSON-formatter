@@ -42,14 +42,6 @@ jobs:
       - name: Run tests
         run: ./gradlew --info test
 
-      - name: Upload to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          files: core/build/reports/jacoco/test/jacocoTestReport.xml
-          flags: unittests
-          name: codecov-report
-          fail_ci_if_error: true
-
   # Job 2: Publish library on main branch
   release:
     name: Release and Publish
